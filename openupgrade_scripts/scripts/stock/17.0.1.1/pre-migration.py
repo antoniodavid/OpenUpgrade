@@ -36,8 +36,26 @@ def fix_move_line_quantity(env):
     )
 
 
+def add_precompute_picking_properties_field(env):
+    """
+    Precompute fields that are needed for the migration.
+    This is a placeholder function, as no precomputed fields are needed
+    for this migration.
+    """
+    if not openupgrade.column_exists(
+        env.cr, "stock_picking", "picking_properties"
+    ):
+        openupgrade.logged_query(
+            env.cr,
+            """
+            ALTER TABLE stock_picking ADD COLUMN picking_properties JSONB;
+            """,
+        )
+
+
 @openupgrade.migrate()
 def migrate(env, version):
     openupgrade.rename_fields(env, _field_renames)
     openupgrade.copy_columns(env.cr, _column_copies)
     fix_move_line_quantity(env)
+    add_precompute_picking_properties_field(env)
